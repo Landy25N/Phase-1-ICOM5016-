@@ -1,22 +1,27 @@
 from config.dbconfig import rg_config
 import psycopg2
 class RequestsDAO:
+    def __init__(self):
+
+        connection_url = "dbname=%s user=%s password=%s" % (rg_config['dbname'],
+                                                            rg_config['user'],
+                                                            rg_config['passwd'])
+        self.conn = psycopg2._connect(connection_url)
 
     def getRequestedResources(self):
+        cursor = self.conn.cursor()
+        query = "select rid, rname, rprice, qty from resources natural inner join requests;"
+        cursor.execute(query)
         result = []
-        result.append('1 Small_Bottle 1')
-        result.append("2 1_Gallon_Bottle 5")
-        result.append('5 Canned_Food 10')
-        result.append('7 Ice 15')
-        result.append('10 Gasoline 2')
-        result.append('12 Heavy_Device 1')
-        result.append('15 Power_Generator 1')
+        for row in cursor:
+            result.append(row)
         return result
 
     def getRequestByKeyword(self, keyword):
-        result = []
-        result.append('2 1_Gallon_Bottle 5')
-        result.append('1 Small_Bottle 2')
+        cursor = self.conn.cursor()
+        query = "select rid, rname, rprice, qty from resources natural inner join requests where rname = %s order by rname;"
+        cursor.execute(query, (keyword,))
+        result = cursor.fetchone()
         return result
 
     def addRequestedResource(self, uid, rid, qty):

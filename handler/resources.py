@@ -5,10 +5,19 @@ from dao.resources import ResourcesDAO
 class ResourceHandler:
     def build_resource_dict(self, row):
         result = {}
-        divide = row.split(' ')
-        result['rid'] = divide[0]
-        result['rname'] = divide[1]
-        result['qty'] = divide[2]
+        result['rid'] = row[0]
+        result['rname'] = row[1]
+        result['rprice'] = row[2]
+        result['qty'] = row[3]
+        return result
+
+    def build_user_dict(self, row):
+        result = {}
+        result['uid'] = row[0]
+        result['fname'] = row[1]
+        result['lname'] = row[2]
+        result['city'] = row[3]
+        result['phone'] = row[4]
         return result
 
     def build_daily_needs_dict(self, row):
@@ -150,7 +159,7 @@ class ResourceHandler:
         if row[index+13] == '0':
             result['clothing'] = row[index+13]
         if row[index+14] == '0':
-            result['power generatos'] = row[index+14]
+            result['power generators'] = row[index+14]
         if row[index+15] == '0':
             result['batteries'] = row[index+15]
         return result
@@ -207,14 +216,14 @@ class ResourceHandler:
             result['batteries'] = row[index+15]
         return result
 
-    def getAResource(self):
+    def getAResource(self, rid):
         dao = ResourcesDAO()
-        resource_list = dao.getAResource()
-        result_list = []
-        for row in resource_list:
-            result = self.build_resource_dict(row)
-            result_list.append(result)
-        return jsonify(Resource=result_list)
+        row = dao.getAResource(rid)
+        if not row:
+            return jsonify(Error = "Resource Not Found"), 404
+        else:
+            request = self.build_resource_dict(row)
+            return jsonify(Resource = request)
 
     def getAvailableResources(self):
         dao = ResourcesDAO()
@@ -223,28 +232,50 @@ class ResourceHandler:
         for row in resource_list:
             result = self.build_resource_dict(row)
             result_list.append(result)
-        return jsonify(Resource=result_list)
+        return jsonify(AvailableResources=result_list)
 
     def getAvailableByKeyword(self, keyword):
         dao = ResourcesDAO()
-        resource_list = dao.getAvailableByKeyword(keyword)
+        row = dao.getAvailableByKeyword(keyword)
+        if not row:
+            return jsonify(Error = "Resource Not Available"), 404
+        else:
+            resource = self.build_resource_dict(row)
+            return jsonify(ResourceSearchResult = resource)
+
+    def getSuppliersByResourceId(self, rid):
+        dao = ResourcesDAO()
+        if not dao.getAResource(rid):
+            return jsonify(Error="Resource Not Found"), 404
+        suppliers_list = dao.getSuppliersByResourceId(rid)
         result_list = []
-        for row in resource_list:
-            result = self.build_resource_dict(row)
+        for row in suppliers_list:
+            result = self.build_user_dict(row)
             result_list.append(result)
-        return jsonify(Resource=result_list)
+        return jsonify(Suppliers=result_list)
+
+    def getResourcesByCity(self, city):
+        dao = ResourcesDAO()
+        suppliers_list = dao.getResourcesByCity(city)
+        if len(suppliers_list) == 0:
+            return jsonify(Error="City Not Found"), 404
+        result_list = []
+        for row in suppliers_list:
+            result = self.build_user_dict(row)
+            result_list.append(result)
+        return jsonify(Suppliers=result_list)
 
     def getDailyNeedsStats(self):
         dao = ResourcesDAO()
         daily_list = dao.getDailyStats()
         result = self.build_daily_needs_dict(daily_list)
-        return jsonify(Dashboard=result)
+        return jsonify(DailyNeedsDashboard=result)
 
     def getDailyAvailableStats(self):
         dao = ResourcesDAO()
         daily_list = dao.getDailyStats()
         result = self.build_daily_available_dict(daily_list)
-        return jsonify(Dashboard=result)
+        return jsonify(DailyAvailabilityDashboard=result)
 
     def getAllDailyStats(self):
         dao = ResourcesDAO()
@@ -254,7 +285,7 @@ class ResourceHandler:
         result2 = self.build_daily_available_dict(daily_list)
         result.append(result1)
         result.append(result2)
-        return jsonify(Dashboard=result)
+        return jsonify(DailyDashboard=result)
 
     def getSenateNeedsStats(self):
         dao = ResourcesDAO()
@@ -263,7 +294,7 @@ class ResourceHandler:
         for row in range(0, 8):
             result = self.build_senate_needs_dict(weekly_list, row*16)
             result_list.append(result)
-        return jsonify(Dashboard=result_list)
+        return jsonify(SenateNeedsDashboard=result_list)
 
     def getSenateAvailableStats(self):
         dao = ResourcesDAO()
@@ -272,7 +303,7 @@ class ResourceHandler:
         for row in range(0, 8):
             result = self.build_senate_available_dict(weekly_list, row*16)
             result_list.append(result)
-        return jsonify(Dashboard=result_list)
+        return jsonify(SenateAvailabilityDashboard=result_list)
 
     def getAllSenateStats(self):
         dao = ResourcesDAO()
@@ -284,4 +315,4 @@ class ResourceHandler:
         for row in range(0, 8):
             result2 = self.build_senate_available_dict(weekly_list, row*16)
             result_list.append(result2)
-        return jsonify(Dashboard=result_list)
+        return jsonify(SenateDashboard=result_list)

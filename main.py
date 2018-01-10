@@ -9,85 +9,117 @@ app = Flask(__name__)
 
 @app.route('/')
 def greeting():
-    return 'Why hello there! This is a very questionable hard-wired resource app! :<'
+    return 'Why hello there! This is a semicomplete, semihard-wired resources app! :<'
 
 
 
-@app.route('/users/admin')
+@app.route('/Resources/register/admin')
 def regAdmin():
     return UserHandler().registerAdmin(1, 'Rouon', 'Aro')
 
-@app.route('/users/inneed')
+@app.route('/Resources/register/inneed')
 def regNeed():
-    return UserHandler().registerNeed(2, 'Kagamine', 'Len')
+    return UserHandler().registerNeed(5, 'Akagami', 'Hero')
 
-@app.route('/users/supplier')
+@app.route('/Resources/register/supplier')
 def regSupplier():
-    return UserHandler().registerSupplier(2, 'Lin', 'Hu')
+    return UserHandler().registerSupplier(4, 'Kemonone', 'Rou')
 
-@app.route('/resources/request/<int:rid>')
+@app.route('/Resources/suppliers')
+def showAllSuppliers():
+    return UserHandler().ShowAllSuppliers()
+
+@app.route('/Resources/suppliers/<int:uid>')
+def showSupplier(uid):
+    return UserHandler().ShowSupplier(uid)
+
+@app.route('/Resources/request/<int:rid>')
 def addRequestedResource(rid):
     return RequestHandler().addRequestedResource(5, 1, '10')
 
-@app.route('/resources/<int:rid>')
+@app.route('/Resources/<int:rid>')
 def getAResource(rid):
-    return ResourceHandler().getAResource()
+    return ResourceHandler().getAResource(rid)
 
-@app.route('/resources/reserve')
+@app.route('/Resources/reserve')
 def reserveResource():
     return RequestHandler().reserveResource(16, '4')
 
-@app.route('/resources/browse/requested')
+@app.route('/Resources/purchase')
+def purchaseResource():
+    return RequestHandler().reserveResource(16, '4')
+
+@app.route('/Resources/requested')
 def getRequestedResources():
     return RequestHandler().getRequestedResources()
 
-@app.route('/resources/browse/available')
+@app.route('/Resources')
 def getAvailableResources():
     return ResourceHandler().getAvailableResources()
 
-@app.route('/resources/browse/requested/<string:keyword>')
+@app.route('/Resources/requested/<string:keyword>')
 def getRequestByKeyword(keyword):
-    return RequestHandler().getRequestByKeyword('Bottle')
+    return RequestHandler().getRequestByKeyword(keyword)
 
-@app.route('/resources/browse/available/<string:keyword>')
+@app.route('/Resources/<string:keyword>')
 def getAvailableByKeyword(keyword):
-    return ResourceHandler().getAvailableByKeyword("Med")
+    return ResourceHandler().getAvailableByKeyword(keyword)
 
-@app.route('/resources/dashboard/daily/needs')
+@app.route('/Resources/dashboard/daily/needs')
 def getDailyNeedsStats():
     return ResourceHandler().getDailyNeedsStats()
 
-@app.route('/resources/dashboard/daily/available')
+@app.route('/Resources/dashboard/daily/available')
 def getDailyAvailableStats():
     return ResourceHandler().getDailyAvailableStats()
 
-@app.route('/resources/dashboard/daily')
+@app.route('/Resources/dashboard/daily')
 def getAllDailyStats():
     return ResourceHandler().getAllDailyStats()
 
-@app.route('/resources/dashboard/weekly/needs')
+@app.route('/Resources/dashboard/weekly/needs')
 def getWeeklyNeedsStats():
     return WeeklyHandler().getWeeklyNeedsStats()
 
-@app.route('/resources/dashboard/weekly/available')
+@app.route('/Resources/dashboard/weekly/available')
 def getWeeklyAvailableStats():
     return WeeklyHandler().getWeeklyAvailableStats()
 
-@app.route('/resources/dashboard/weekly')
+@app.route('/Resources/dashboard/weekly')
 def getAllWeeklyStats():
     return WeeklyHandler().getAllWeeklyStats()
 
-@app.route('/resources/dashboard/senate/needs')
+@app.route('/Resources/dashboard/senate/needs')
 def getSenateNeedsStats():
     return ResourceHandler().getSenateNeedsStats()
 
-@app.route('/resources/dashboard/senate/available')
+@app.route('/Resources/dashboard/senate/available')
 def getSenateAvailableStats():
     return ResourceHandler().getSenateAvailableStats()
 
-@app.route('/resources/dashboard/senate')
+@app.route('/Resources/dashboard/senate')
 def getAllSenateStats():
     return ResourceHandler().getAllSenateStats()
+
+@app.route('/Resources/<int:rid>/supplies')
+def getResourcesBySupplierId(uid):
+    return UserHandler().getResourcesBySupplierId(uid)
+
+@app.route('/Resources/<int:rid>/suppliers')
+def getSuppliersByResourceId(rid):
+    return ResourceHandler().getSuppliersByResourceId(rid)
+
+@app.route('/Resources/<string:city>/supplies')
+def getResourcesByCity(city):
+    return ResourceHandler().getResourcesByCity(city)
+
+@app.route('/Resources/purchases/<int:uid>')
+def getPurchasesByUserId(uid):
+    return UserHandler().getPurchasesByUserId(uid)
+
+@app.route('/Resources/sales/<int:uid>')
+def getPurchasesByUserId(uid):
+    return UserHandler().getSalesByUserId(uid)
 
 
 if __name__ == '__main__':

@@ -1,29 +1,52 @@
 from config.dbconfig import rg_config
 import psycopg2
 class ResourcesDAO:
+    def __init__(self):
 
-    def getAResource(self):
-        result = []
-        result.append('7 Ice 0')
+        connection_url = "dbname=%s user=%s password=%s" % (rg_config['dbname'],
+                                                            rg_config['user'],
+                                                            rg_config['passwd'])
+        self.conn = psycopg2._connect(connection_url)
+
+    def getAResource(self, rid):
+        cursor = self.conn.cursor()
+        query = "select rid, rname, rprice, qty from resources natural inner join supplies where rid = %s;"
+        cursor.execute(query, (rid,))
+        result = cursor.fetchone()
         return result
 
     def getAvailableResources(self):
+        cursor = self.conn.cursor()
+        query = "select rid, rname, rprice, qty from resources natural inner join supplies;"
+        cursor.execute(query)
         result = []
-        result.append('3 Medications 5')
-        result.append('4 Baby_Food 15')
-        result.append('6 Dry_Food 10')
-        result.append('8 Diesel 5')
-        result.append('9 Propane 15')
-        result.append('11 Medical_Devices 20')
-        result.append('13 Tools 25')
-        result.append('14 Clothing 50')
-        result.append('16 Batteries 8')
+        for row in cursor:
+            result.append(row)
         return result
 
     def getAvailableByKeyword(self, keyword):
+        cursor = self.conn.cursor()
+        query = "select rid, rname, rprice, qty from resources natural inner join supplies where rname = %s order by rname;"
+        cursor.execute(query, (keyword,))
+        result = cursor.fetchone()
+        return result
+
+    def getSuppliersByResourceId(self, rid):
+        cursor = self.conn.cursor()
+        query = "select uid, fname, lname, city, phone from resources natural inner join users natural inner join supplies natural inner join address where rid = %s and type = 2;"
+        cursor.execute(query, (rid,))
         result = []
-        result.append('11 Medical_Devices 20')
-        result.append('3 Medications 5')
+        for row in cursor:
+            result.append(row)
+        return result
+
+    def getResourcesByCity(self, city):
+        cursor = self.conn.cursor()
+        query = "rid, rname, rprice, qty from resources natural inner join users natural inner join supplies natural inner join address where city = %s and type = 2;"
+        cursor.execute(query, (city,))
+        result = []
+        for row in cursor:
+            result.append(row)
         return result
 
     def getDailyStats(self):

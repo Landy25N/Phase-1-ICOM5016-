@@ -1,21 +1,64 @@
 -- This file contains the definitions of the tables used in the application.
 --
 -- Resources table
-create table resources(rid serial primary key, rname varchar(20), qty integer);
+create table resources(rid serial primary key, rname varchar(20), rprice float);
 
 -- Users table
-create table users(uid serial primary key, type varchar(20), fname varchar(20), lname varchar(20), address varchar(50));
+create table users(uid serial primary key, type varchar(20), fname varchar(20), lname varchar(20), phone integer);
 
--- Requests List
+-- Address table
+create table address(uid integer references Users(uid), city varchar(20), street varchar(50), zcode int);
+
+-- Requests table
 create table requests(uid integer references Users(uid), rid integer references Resources(rid)), qty integer, primary key(rid, uid));
 
--- Supply List
+-- Supplies table
 create table supplies(uid integer references Users(uid), rid integer references Resources(rid)), qty integer, primary key(rid, uid));
 
--- Daily Stats Data (16 quantities)
-create table daily(did serial primary key, small int, gallon int, med int, baby int, can int, dry int, ice int,
-diesel int, pro int, gas int, md int, hd int, tools int, cloth int, pg int, bat int);
+-- Purchases table
+create table purchases(pid serial primary key, sellerid integer, uid integer references Users(uid), cid integer references CreditCards(cid), ptotal float, pdate Date);
 
--- Weekly day table
-create table weekly(did integer references Daily(did), 1st table, 2nd table, 3rd table, 4th table, 5th table,
-6th table, 7th table);
+-- CreditCards table
+create table creditcards (cid serial primary key, uid integer references Users(uid), cnumber char(16), cexpdate char(6), credit_limit float);
+
+-- ResourceSales table
+create table resourcesales(pid integer references Purchases(pid), rid integer references Resources(rid), qty integer, pprice float, primary key(rid, pid));
+
+-- Water table
+create table water(rid integer references Resources(rid), rtype integer);
+
+-- Medication table
+create table medication(rid integer references Resources(rid), rtype integer);
+
+-- BabyFood table
+create table babyfood(rid integer references Resources(rid), rage integer, rflavor varchar(20));
+
+-- CannedFood table
+create table cannedfood(rid integer references Resources(rid), rtype integer);
+
+-- DriedFood table
+create table driedfood(rid integer references Resources(rid), rtype integer);
+
+-- Ice table
+create table water(rid integer references Resources(rid), rsize integer);
+
+-- Fuel table
+create table fuel(rid integer references Resources(rid), rtype integer, amount float);
+
+-- MedicalDevice table
+create table medicaldevice(rid integer references Resources(rid), rtype integer);
+
+-- HeavyDevice table
+create table heavydevice(rid integer references Resources(rid), rtype integer);
+
+-- Clothing table
+create table clothing(rid integer references Resources(rid), rtype integer, rsize integer);
+
+-- Tools table
+create table tools(rid integer references Resources(rid), rtype integer);
+
+-- PowerGenerator table
+create table powergenerator(rid integer references Resources(rid), rpower float, rsize integer);
+
+-- Batteries table
+create table batteries(rid integer references Resources(rid), rtype integer);

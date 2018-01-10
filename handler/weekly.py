@@ -83,7 +83,7 @@ class WeeklyHandler:
         for row in range(0, 7):
             result = self.build_weekly_needs_dict(weekly_list, row*16)
             result_list.append(result)
-        return jsonify(Dashboard=result_list)
+        return jsonify(WeeklyNeedsDashboard=result_list)
 
     def getWeeklyAvailableStats(self):
         dao = WeeklyDAO()
@@ -92,7 +92,7 @@ class WeeklyHandler:
         for row in range(0, 7):
             result = self.build_weekly_available_dict(weekly_list, row*16)
             result_list.append(result)
-        return jsonify(Dashboard=result_list)
+        return jsonify(WeeklyAvailabilityDashboard=result_list)
 
     def getAllWeeklyStats(self):
         dao = WeeklyDAO()
@@ -104,4 +104,4 @@ class WeeklyHandler:
         for row in range(0, 7):
             result2 = self.build_weekly_available_dict(weekly_list, row*16)
             result_list.append(result2)
-        return jsonify(Dashboard=result_list)
+        return jsonify(WeeklyDashboard=result_list)
