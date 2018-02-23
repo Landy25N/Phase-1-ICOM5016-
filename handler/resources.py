@@ -20,6 +20,13 @@ class ResourceHandler:
         result['phone'] = row[4]
         return result
 
+    def build_resource_attributes(self, rid, rname, rprice):
+        result = {}
+        result['rid'] = rid
+        result['rname'] = rname
+        result['rprice'] = rprice
+        return result
+
     def build_daily_needs_dict(self, row):
         result = {}
         if row[0] == '0':
@@ -316,3 +323,37 @@ class ResourceHandler:
             result2 = self.build_senate_available_dict(weekly_list, row*16)
             result_list.append(result2)
         return jsonify(SenateDashboard=result_list)
+
+    def AddResource(self, form):
+        if len(form) != 4:
+            return jsonify(Error = "Malformed post request"), 400
+        else:
+            uid = form['uid']
+            rname = form['rname']
+            rprice = form['rprice']
+            qty = form['qty']
+            if rname and rprice:
+                dao = ResourcesDAO()
+                rid = dao.addResource(rname, rprice)
+                dao.addSupply(uid, rid, qty)
+                result = self.build_resource_attributes(rid, rname, rprice)
+                return jsonify(Resource=result), 201
+            else:
+                return jsonify(Error="Unexpected attributes in post request"), 400
+
+    def updateResource(self, rid, form):
+        dao = ResourcesDAO()
+        if not dao.getAResource(rid):
+            return jsonify(Error = "Resource not found."), 404
+        else:
+            if len(form) != 2:
+                return jsonify(Error="Malformed update request"), 400
+            else:
+                rname = form['rname']
+                rprice = form['rprice']
+                if rname and rprice:
+                    dao.updateResource(rid, rname, rprice)
+                    result = self.build_resource_attributes(rid, rname, rprice)
+                    return jsonify(Part=result), 200
+                else:
+                    return jsonify(Error="Unexpected attributes in update request"), 400

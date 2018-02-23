@@ -8,6 +8,29 @@ class ResourcesDAO:
                                                             rg_config['passwd'])
         self.conn = psycopg2._connect(connection_url)
 
+
+    def addResource(self, rname, rprice):
+        cursor = self.conn.cursor()
+        query = "insert into resources(rname,rprice) values (%s, %s) returning rid;"
+        cursor.execute(query, (rname, rprice,))
+        rid = cursor.fetchone()[0]
+        self.conn.commit()
+        return rid
+
+    def addSupply(self, uid, rid, qty):
+        cursor = self.conn.cursor()
+        query = "insert into supplies(uid, rid, qty) values (%s, %s, %s);"
+        cursor.execute(query, (uid, rid, qty,))
+        self.conn.commit()
+        return rid
+
+    def updateResource(self, rid, rname, rprice):
+        cursor = self.conn.cursor()
+        query = "update resources set rname = %s, rprice = %s where rid = %s;"
+        cursor.execute(query, (rname, rprice, rid,))
+        self.conn.commit()
+        return rid
+
     def getAResource(self, rid):
         cursor = self.conn.cursor()
         query = "select rid, rname, rprice, qty from resources natural inner join supplies where rid = %s;"

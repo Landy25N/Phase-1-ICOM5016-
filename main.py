@@ -9,61 +9,104 @@ app = Flask(__name__)
 
 @app.route('/')
 def greeting():
-    return 'Why hello there! This is a semicomplete, semihard-wired resources app! :<'
+    return 'Why hello there! This is a kinda complete resources app'
 
 
 
-@app.route('/Resources/register/admin')
+@app.route('/Resources/register/admin', methods=['POST'])
 def regAdmin():
-    return UserHandler().registerAdmin(1, 'Rouon', 'Aro')
+    if request.method == 'POST':
+        return UserHandler().registerAdmin(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/register/inneed')
+@app.route('/Resources/register/inneed', methods=['POST'])
 def regNeed():
-    return UserHandler().registerNeed(5, 'Akagami', 'Hero')
+    if request.method == 'POST':
+        return UserHandler().registerNeed(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/register/supplier')
+@app.route('/Resources/register/supplier', methods=['POST'])
 def regSupplier():
-    return UserHandler().registerSupplier(4, 'Kemonone', 'Rou')
+    if request.method == 'POST':
+        return UserHandler().registerSupplier(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/suppliers')
+@app.route('/Resources/suppliers', methods=['GET', 'POST'])
 def showAllSuppliers():
-    return UserHandler().ShowAllSuppliers()
+    if request.method == 'POST':
+        return UserHandler().registerSupplier(request.form)
+    elif not request.args:
+            return UserHandler().showAllSuppliers()
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/suppliers/<int:uid>')
+@app.route('/Resources/suppliers/<int:uid>', methods=['GET'])
 def showSupplier(uid):
-    return UserHandler().ShowSupplier(uid)
+    if request.method == 'GET':
+        return UserHandler().showSupplier(uid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/request/<int:rid>')
+@app.route('/Resources/request/<int:rid>', methods=['POST'])
 def addRequestedResource(rid):
-    return RequestHandler().addRequestedResource(5, 1, '10')
+    if request.method == 'POST':
+        return RequestHandler().addRequestedResource(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/<int:rid>')
+@app.route('/Resources/<int:rid>', methods=['GET', 'PUT'])
 def getAResource(rid):
-    return ResourceHandler().getAResource(rid)
+    if request.method == 'GET':
+        return ResourceHandler().getAResource(rid)
+    elif  request.method == 'PUT':
+        return ResourceHandler().updateResource(rid, request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/reserve')
-def reserveResource():
-    return RequestHandler().reserveResource(16, '4')
+@app.route('/Resources/reserve', methods=['POST'])
+def reserveFreeResource():
+    if request.method == 'POST':
+        return RequestHandler().reserveFreeResource(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/purchase')
+@app.route('/Resources/purchase', methods=['POST'])
 def purchaseResource():
-    return RequestHandler().reserveResource(16, '4')
+    if request.method == 'POST':
+        return RequestHandler().purchaseResource(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/requested')
+@app.route('/Resources/requested', methods=['POST'])
 def getRequestedResources():
-    return RequestHandler().getRequestedResources()
+    if request.method == 'POST':
+        return RequestHandler().getRequestedResources()
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources')
+@app.route('/Resources', methods=['POST'])
 def getAvailableResources():
-    return ResourceHandler().getAvailableResources()
+    if request.method == 'POST':
+        return ResourceHandler().getAvailableResources()
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/requested/<string:keyword>')
+@app.route('/Resources/requested/<string:keyword>', methods=['POST'])
 def getRequestByKeyword(keyword):
-    return RequestHandler().getRequestByKeyword(keyword)
+    if request.method == 'POST':
+        return RequestHandler().getRequestByKeyword(keyword)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/<string:keyword>')
+@app.route('/Resources/<string:keyword>', methods=['POST'])
 def getAvailableByKeyword(keyword):
-    return ResourceHandler().getAvailableByKeyword(keyword)
+    if request.method == 'POST':
+        return ResourceHandler().getAvailableByKeyword(keyword)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
 @app.route('/Resources/dashboard/daily/needs')
 def getDailyNeedsStats():
@@ -101,26 +144,56 @@ def getSenateAvailableStats():
 def getAllSenateStats():
     return ResourceHandler().getAllSenateStats()
 
-@app.route('/Resources/<int:rid>/supplies')
+@app.route('/Resources/<int:rid>/supplies', methods=['POST'])
 def getResourcesBySupplierId(uid):
-    return UserHandler().getResourcesBySupplierId(uid)
+    if request.method == 'POST':
+        return UserHandler().getResourcesBySupplierId(uid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/<int:rid>/suppliers')
+@app.route('/Resources/<int:rid>/suppliers', methods=['POST'])
 def getSuppliersByResourceId(rid):
-    return ResourceHandler().getSuppliersByResourceId(rid)
+    if request.method == 'POST':
+        return ResourceHandler().getSuppliersByResourceId(rid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/<string:city>/supplies')
+@app.route('/Resources/<string:city>/supplies', methods=['POST'])
 def getResourcesByCity(city):
-    return ResourceHandler().getResourcesByCity(city)
+    if request.method == 'POST':
+        return ResourceHandler().getResourcesByCity(city)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/purchases/<int:uid>')
+@app.route('/Resources/purchases/<int:uid>', methods=['POST'])
 def getPurchasesByUserId(uid):
-    return UserHandler().getPurchasesByUserId(uid)
+    if request.method == 'POST':
+        return UserHandler().getPurchasesByUserId(uid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
-@app.route('/Resources/sales/<int:uid>')
+@app.route('/Resources/sales/<int:uid>', methods=['POST'])
 def getPurchasesByUserId(uid):
-    return UserHandler().getSalesByUserId(uid)
+    if request.method == 'POST':
+        return UserHandler().getSalesByUserId(uid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
+@app.route('/Resources/purchases/<int:rid>', methods=['POST'])
+def getPurchasesByPurchaseId(pid):
+    if request.method == 'POST':
+        return UserHandler().getPurchasesByPurchaseId(pid)
+    else:
+        return jsonify(Error="Method not allowed."), 405
+
+@app.route('/Resources/register/creditcard', methods=['POST', 'PUT'])
+def registerCreditCard():
+    if request.method == 'POST':
+        return UserHandler().registerCreditCard(request.form)
+    elif request.method == 'PUT':
+        return UserHandler().updateCreditCard(request.form)
+    else:
+        return jsonify(Error="Method not allowed."), 405
 
 if __name__ == '__main__':
     app.run()
